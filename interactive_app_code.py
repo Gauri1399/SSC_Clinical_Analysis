@@ -407,71 +407,45 @@ elif nav_page == NAV_PATIENT:
 
     # ---- Overview -----------------------------------------------------------
     with tab_overview:
-
         subtype_df = rows_for("ssc_subtype", sid)
         subtype = subtype_df.iloc[0].to_dict() if not subtype_df.empty else None
 
         c1, c2 = st.columns(2)
-
-        # Demographics
-
         with c1:
             st.markdown("##### DEMOGRAPHICS")
-
             if demo:
-                demographic_info = {
-                    "Name": f"{demo.get('first_name', '')} {demo.get('last_name', '')}",
-                    "DOB": fmt_date(demo.get("birth_date")),
-                    "Gender": demo.get("gender", "—"),
-                    "Race / Eth.": f"{demo.get('races', '—')} · {demo.get('ethnicity', '—')}",
-                    "State": demo.get("state", "—"),
-                    "Height / Wt": f"{demo.get('height', '—')} in · {demo.get('weight', '—')} lb",
-                    "Diagnosis": demo.get("diagnosis", "—"),
-                }
-
-                demographic_df = pd.DataFrame(
-                    demographic_info.items(),
-                    columns=["Feature", "Value"]
+                st.markdown(
+                    f"""
+                    | | |
+                    |---|---|
+                    | **Name** | {demo.get('first_name', '')} {demo.get('last_name', '')} |
+                    | **DOB** | {fmt_date(demo.get('birth_date'))} |
+                    | **Gender** | {demo.get('gender', '—')} |
+                    | **Race / Eth.** | {demo.get('races', '—')} · {demo.get('ethnicity', '—')} |
+                    | **State** | {demo.get('state', '—')} |
+                    | **Height / Wt** | {demo.get('height', '—')} in · {demo.get('weight', '—')} lb |
+                    | **Diagnosis** | {demo.get('diagnosis', '—')} |
+                    """
                 )
-
-                st.dataframe(
-                    demographic_df,
-                    hide_index=True,
-                    use_container_width=True
-                )
-
             else:
                 empty_note("No demographic record linked to this subject_id.")
 
-
-        # Disease Course
         with c2:
             st.markdown("##### DISEASE COURSE")
-
             if subtype:
-
-                disease_info = {
-                    "Subtype": subtype.get("ssc_subtype", "—"),
-                    "Other Dx": subtype.get("other_dx") or "—",
-                    "Raynaud's onset": fmt_date(subtype.get("raynaud_date")),
-                    "First non-Raynaud sx": (
-                        f"{fmt_date(subtype.get('nonraynaud_date'))} "
-                        f"({subtype.get('nonraynaud_sx') or '—'})"
-                    ),
-                    "SSc diagnosis": fmt_date(subtype.get("diagnosis_date")),
-                }
-
-                disease_df = pd.DataFrame(
-                    disease_info.items(),
-                    columns=["Feature", "Value"]
+                pill_cls = "pill-lc" if subtype.get("ssc_subtype") == "lcSSc" else "pill-dc"
+                st.markdown(
+                    f"""
+                    | | |
+                    |---|---|
+                    | **Subtype** | {subtype.get('ssc_subtype', '—')} <span class="pill {pill_cls}">{subtype.get('ssc_subtype', '—')}</span> |
+                    | **Other Dx** | {subtype.get('other_dx') or '—'} |
+                    | **Raynaud's onset** | {fmt_date(subtype.get('raynaud_date'))} |
+                    | **First non-Raynaud sx** | {fmt_date(subtype.get('nonraynaud_date'))} ({subtype.get('nonraynaud_sx') or '—'}) |
+                    | **SSc diagnosis** | {fmt_date(subtype.get('diagnosis_date'))} |
+                    """,
+                    unsafe_allow_html=True,
                 )
-
-                st.dataframe(
-                    disease_df,
-                    hide_index=True,
-                    use_container_width=True
-                )
-
             else:
                 empty_note("No subtype record linked to this subject_id.")
 
